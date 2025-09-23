@@ -6,4 +6,7 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   await app.listen(config.getOrThrow<string>('APPLICATION_PORT'), '0.0.0.0');
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Application failed to start', err);
+  process.exit(1);
+});
