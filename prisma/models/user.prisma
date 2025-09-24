@@ -1,0 +1,79 @@
+model UserProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  username  String   @unique
+  firstName String? @map("first_name")
+  lastName  String? @map("last_name")
+  picture   String?
+  bio       String?
+  location  String?
+  website   String?
+  socialLinks Json? @map("social_links")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("user_profiles")
+}
+
+model UserCareer {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  headline  String?  
+  skills    String[]
+  experience Int?
+  jobTitle   String?  @map("job_title")
+  company    String?
+  employmentType EmploymentType?  @map("employment_type")
+  isLookingForJob Boolean @default(false) @map("is_looking_for_job")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("user_careers")
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+  INTERN
+  TEMPORARY
+}
+
+model UserSocial {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  interests String[]
+  collabType CollabType? @map("collab_type")
+  @@map("user_socials")
+}
+
+enum CollabType {
+  WORK
+  FRIENDS
+  STARTUP
+}
+
+model UserFriend {
+  id        String   @id @default(uuid())
+  userId    String  @map("user_id")
+  friendId  String  @map("friend_id")
+  status    FriendStatus  
+  createdAt DateTime @default(now())
+  @@map("user_friends")
+}
+
+enum FriendStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+model UserFollow {
+  id        String   @id @default(uuid())
+  followerId String @map("follower_id")
+  followingId String  @map("following_id")
+  createdAt   DateTime @default(now())  @map("created_at")
+  @@map("user_follows")
+}
+

@@ -1,0 +1,65 @@
+model AuthUser {
+  id String @id @default(uuid())
+  username String @unique
+  email    String @unique
+  password String
+
+
+  role UserRole @default(REGULAR)
+
+  isVerified         Boolean @default(false) @map("is_verified")
+  isTwoFactorEnabled Boolean @default(false) @map("is_two_factor_enabled")
+
+  method AuthMethod
+
+  providers AuthProvider[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("auth_users")
+}
+
+enum UserRole {
+  REGULAR
+  ADMIN
+}
+
+model AuthProvider {
+  id String @id @default(uuid())
+
+  type     String
+  provider String
+
+  refreshToken String? @map("refresh_token")
+  accessToken  String? @map("access_token")
+  expiresAt    Int     @map("expires_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   AuthUser?  @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
+
+  @@map("auth_providers")
+}
+
+enum AuthMethod {
+  CREDENTIALS
+}
+
+model Token {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  token     String    @unique
+  type      TokenType
+  expiresIn DateTime  @map("expires_in")
+
+  @@map("token")
+}
+
+enum TokenType {
+  VERIFICATION
+  TWO_FACTOR
+  PASSWORD_RESET
+}
