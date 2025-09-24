@@ -1,27 +1,36 @@
+import { Logger, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import type { NestExpressApplication } from '@nestjs/platform-express'
+
+import { setupSwagger } from '@/shared/utils/swagger.utils'
 
 import { AppModule } from './app.module'
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule)
+	const app = await NestFactory.create<NestExpressApplication>(AppModule)
 	const config = app.get(ConfigService)
-	const swaggerConfig = new DocumentBuilder()
-		.setTitle('Awwwork API')
-		.setDescription('API Documentation')
-		.setVersion('1.0.0')
-		.setContact('Awwwork', 'https://awwwork.ru', 'info@awwwork.ru')
-		.build()
+	const logger = new Logger(AppModule.name)
+	app.useGlobalPipes(
+		new ValidationPipe({
+			transform: true
+		})
+	)
+	// app.set('trust proxy', true)
 
-	const document = SwaggerModule.createDocument(app, swaggerConfig)
+	setupSwagger(app)
 
-	SwaggerModule.setup('/docs', app, document, {
-		yamlDocumentUrl: '/swagger.yaml'
-	})
-	await app.listen(config.getOrThrow<string>('APPLICATION_PORT'), '0.0.0.0')
+	const port = config.getOrThrow<number>('HTTP_PORT')
+	const host = config.getOrThrow<string>('HTTP_HOST')
+
+	try {
+		await app.listen(port)
+
+		logger.log(`🚀 Server is running at: ${host}`)
+		logger.log(`📄 Documentation is available at: ${host}/docs`)
+	} catch (error) {
+		logger.error(`❌ Failed to start server: ${error.message}`, error)
+		process.exit(1)
+	}
 }
-bootstrap().catch(err => {
-	console.error('Application failed to start', err)
-	process.exit(1)
-})
+bootstrap()
