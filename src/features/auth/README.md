@@ -16,11 +16,6 @@
     - Two-Factor Authentication (2FA)
     - MultiFactor Authentication (MFA)
 
-### Структура папки
-
-features/auth/
-└── session/ # Стандартная авторизация через email/username + password
-
 ### Тип авторизации
 
 - **Session (через Redis)**  
