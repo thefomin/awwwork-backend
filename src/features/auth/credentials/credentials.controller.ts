@@ -7,6 +7,8 @@ import {
 	Post
 } from '@nestjs/common'
 
+import { Authorization } from '@/shared/decorators'
+
 import { CredentialsService } from './credentials.service'
 import { CreateUserRequest, SigninRequest } from './dto'
 
@@ -28,6 +30,7 @@ export class CredentialsController {
 		return this.credentialsService.login(dto)
 	}
 
+	@Authorization()
 	@Post('logout')
 	@HttpCode(HttpStatus.OK)
 	public async logout(@Headers('x-session-token') token: string) {
