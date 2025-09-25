@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException
+} from '@nestjs/common'
 import { User } from '@prisma/__generated__'
 
 import { PrismaService } from '@/shared/api/prisma/prisma.service'
@@ -45,5 +49,19 @@ export class UsersService {
 		})
 
 		return true
+	}
+
+	public async findUser(user: User) {
+		const isExists = await this.prismaService.userProfile.findUnique({
+			where: {
+				userId: user.id
+			}
+		})
+
+		if (!isExists) {
+			throw new UnauthorizedException('Вы не авторизованы')
+		}
+
+		return isExists
 	}
 }

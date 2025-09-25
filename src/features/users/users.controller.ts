@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Patch } from '@nestjs/common'
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Patch
+} from '@nestjs/common'
 import { User } from '@prisma/__generated__'
 
 import { Authorization, Authorized } from '@/shared/decorators'
@@ -13,10 +20,17 @@ export class UsersController {
 	@Authorization()
 	@Patch('@me')
 	@HttpCode(HttpStatus.OK)
-	public async patchUser(
+	public async updateUser(
 		@Authorized() user: User,
 		@Body() dto: UpdateUserRequest
 	) {
 		return this.usersService.update(user, dto)
+	}
+
+	@Authorization()
+	@HttpCode(HttpStatus.OK)
+	@Get('@me')
+	public async findUser(@Authorized() user: User) {
+		return this.usersService.findUser(user)
 	}
 }
