@@ -18,25 +18,6 @@ export class CredentialsService {
 		private readonly redisService: RedisService
 	) {}
 
-	public async findById(id: string) {
-		const user = await this.prismaService.user.findUnique({
-			where: {
-				id
-			},
-			include: {
-				externalAccounts: true
-			}
-		})
-
-		if (!user) {
-			throw new NotFoundException(
-				'Пользователь не найден. Пожалуйста, проверьте введенные данные.'
-			)
-		}
-
-		return user
-	}
-
 	public async findByEmailOrUsername(login: string) {
 		const user = await this.prismaService.user.findFirst({
 			where: {
@@ -69,19 +50,6 @@ export class CredentialsService {
 		const session = await this.redisService.createSession(user)
 
 		return session
-	}
-	public async update(userId: string, dto: UpdateUserRequest) {
-		const user = await this.findById(userId)
-		const updatedUser = await this.prismaService.user.update({
-			where: {
-				id: user.id
-			},
-			data: {
-				displayName: dto.displayName
-			}
-		})
-
-		return updatedUser
 	}
 
 	public async login(dto: SigninRequest) {
