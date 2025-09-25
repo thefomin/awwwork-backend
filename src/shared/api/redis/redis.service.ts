@@ -8,7 +8,6 @@ import { ConfigService } from '@nestjs/config'
 import type { User } from '@prisma/__generated__'
 import { randomBytes } from 'crypto'
 import Redis from 'ioredis'
-import { UAParser } from 'ua-parser-js'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Session, UserSession } from '@/shared/interfaces'
@@ -24,13 +23,11 @@ export class RedisService
 		super(configService.getOrThrow<string>('REDIS_URI'))
 	}
 
-	public async onModuleInit() {
+	public onModuleInit() {
 		this.logger.log('🔄 Initializing Redis connection...')
-
 		this.on('connect', () => {
 			this.logger.log('✅ Redis connected successfully')
 		})
-
 		this.on('error', err => {
 			this.logger.error('❌ Failed to connect to Redis:', err)
 		})
@@ -88,7 +85,6 @@ export class RedisService
 	): Promise<UserSession | null> {
 		try {
 			const raw = await this.get(`user_sessions:${sessionId}`)
-
 			if (!raw) {
 				this.logger.warn(
 					`UserSession not found for sessionId: ${sessionId}`
@@ -96,7 +92,16 @@ export class RedisService
 				return null
 			}
 
-			const data: UserSession = JSON.parse(raw)
+			let data: UserSession
+			try {
+				data = JSON.parse(raw) as UserSession
+			} catch (err: unknown) {
+				this.logger.error(
+					`Failed to parse UserSession for sessionId: ${sessionId}`,
+					err instanceof Error ? err : undefined
+				)
+				return null
+			}
 
 			if (!data || !data.id || !data.sessionId) {
 				this.logger.warn(
@@ -106,10 +111,10 @@ export class RedisService
 			}
 
 			return data
-		} catch (error) {
+		} catch (error: unknown) {
 			this.logger.error(
 				`Failed to get UserSession for sessionId: ${sessionId}`,
-				error
+				error instanceof Error ? error : undefined
 			)
 			throw error
 		}

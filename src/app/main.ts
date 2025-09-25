@@ -28,9 +28,16 @@ async function bootstrap() {
 
 		logger.log(`🚀 Server is running at: ${host}`)
 		logger.log(`📄 Documentation is available at: ${host}/docs`)
-	} catch (error) {
-		logger.error(`❌ Failed to start server: ${error.message}`, error)
+	} catch (err: unknown) {
+		if (err instanceof Error) {
+			logger.error(`❌ Failed to start server: ${err.message}`, err)
+		} else {
+			logger.error('❌ Failed to start server: Unknown error', err as any)
+		}
 		process.exit(1)
 	}
 }
-bootstrap()
+bootstrap().catch(err => {
+	console.error('Fatal error during bootstrap:', err)
+	process.exit(1)
+})
