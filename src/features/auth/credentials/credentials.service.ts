@@ -47,6 +47,13 @@ export class CredentialsService {
 				externalAccounts: true
 			}
 		})
+
+		await this.prismaService.userProfile.create({
+			data: {
+				userId: user.id,
+				username: user.username
+			}
+		})
 		const session = await this.redisService.createSession(user)
 
 		return session
