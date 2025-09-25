@@ -1,65 +1,77 @@
-model AuthUser {
+model User {
   id String @id @default(uuid())
   username String @unique
   email    String @unique
   password String
+  displayName String? @map("display_name")
+  avatar String?
 
+  role UserRole @default(DEFAULT)
 
-  role UserRole @default(REGULAR)
-
-  isVerified         Boolean @default(false) @map("is_verified")
-  isTwoFactorEnabled Boolean @default(false) @map("is_two_factor_enabled")
-
-  method AuthMethod
-
-  providers AuthProvider[]
+  emailVerification EmailVerification?
+  externalAccounts ExternalAccount[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("auth_users")
+  @@map("users")
 }
 
 enum UserRole {
-  REGULAR
+  DEFAULT
   ADMIN
+
+  @@map("user_roles")
 }
 
-model AuthProvider {
+model EmailVerification {
   id String @id @default(uuid())
 
-  type     String
-  provider String
+  token  String    @unique
+  expiry DateTime?
 
-  refreshToken String? @map("refresh_token")
-  accessToken  String? @map("access_token")
-  expiresAt    Int     @map("expires_at")
+  status EmailVerificationStatus @default(PENDING)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique @map("user_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user   AuthUser?  @relation(fields: [userId], references: [id])
+  @@map("email_verification")
+}
+
+enum EmailVerificationStatus {
+  PENDING
+  VERIFIED
+
+  @@map("email_verification_statuses")
+}
+
+model ExternalAccount {
+  id String @id @default(uuid())
+
+  provider          AccountProvider
+  providerAccountId String          @unique @map("provider_account_id")
+
+  refreshToken String? @map("refresh_token")
+  accessToken  String? @map("access_token")
+  expiry       Int?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @map("user_id")
 
-  @@map("auth_providers")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, provider])
+  @@map("external_accounts")
 }
 
-enum AuthMethod {
-  CREDENTIALS
-}
+enum AccountProvider {
+  GOOGLE
+  GITHUB
+  YANDEX
 
-model Token {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  token     String    @unique
-  type      TokenType
-  expiresIn DateTime  @map("expires_in")
-
-  @@map("token")
-}
-
-enum TokenType {
-  VERIFICATION
-  TWO_FACTOR
-  PASSWORD_RESET
+  @@map("account_providers")
 }

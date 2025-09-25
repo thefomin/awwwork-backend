@@ -12,6 +12,7 @@ model UserProfile {
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
   @@map("user_profiles")
 }
 
@@ -28,6 +29,8 @@ model UserCareer {
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
   @@map("user_careers")
 }
 
@@ -65,7 +68,7 @@ model UserFriend {
 
 enum FriendStatus {
   PENDING
-  ACCEPTED
+  ACCEPTED  
   BLOCKED
 }
 
@@ -74,6 +77,8 @@ model UserFollow {
   followerId String @map("follower_id")
   followingId String  @map("following_id")
   createdAt   DateTime @default(now())  @map("created_at")
+
+   @@unique([followerId, followingId])
   @@map("user_follows")
 }
 
