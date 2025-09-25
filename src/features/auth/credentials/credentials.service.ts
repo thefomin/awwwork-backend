@@ -9,7 +9,7 @@ import { hash, verify } from 'argon2'
 import { PrismaService } from '@/shared/api/prisma/prisma.service'
 import { RedisService } from '@/shared/api/redis/redis.service'
 
-import { CreateUserRequest, SigninRequest, UpdateUserRequest } from './dto'
+import { CreateUserRequest, SigninRequest } from './dto'
 
 @Injectable()
 export class CredentialsService {
