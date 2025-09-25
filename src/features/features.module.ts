@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common'
+import { ScheduleModule } from '@nestjs/schedule'
 
-import { AuthModule } from './auth/auth.module'
+import { CredentialsModule } from './auth/credentials/credentials.module'
+import { UsersModule } from './users/users.module'
 
 @Module({
-	imports: [AuthModule],
+	imports: [ScheduleModule.forRoot(), CredentialsModule, UsersModule],
 	providers: []
 })
 export class FeaturesModule {}
