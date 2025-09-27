@@ -4,15 +4,17 @@
 
 ### Структура
 
+````markdown
 shared/
-├─ api/ # Низкоуровневые клиенты и абстракции
-│ ├─ prisma/ # PrismaService: работа с базой данных
-│ └─ redis/ # RedisService: работа с сессиями и кэшем
+├─ api/           # Низкоуровневые клиенты и абстракции
+│  ├─ prisma/     # PrismaService: работа с базой данных
+│  └─ redis/      # RedisService: работа с сессиями и кэшем
 │
-├─ services/ # Бизнес-логика поверх API сервисов
-│ ├─ user.service.ts # Работа с пользователями
-│ ├─ profile.service.ts # Работа с профилями
-│ └─ session.service.ts # Создание и удаление сессий
+├─ services/      # Бизнес-логика поверх API сервисов
+│  ├─ user.service.ts     # Работа с пользователями
+│  ├─ profile.service.ts  # Работа с профилями
+│  └─ session.service.ts  # Создание и удаление сессий
+````
 
 
 ### Основные принципы
