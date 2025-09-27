@@ -76,6 +76,13 @@ export class RedisService
 			'EX',
 			7 * 24 * 60 * 60
 		)
+		await this.set(
+    		`session_token:${session.token}`,
+    		session.id,
+    		'EX',
+    		7 * 24 * 60 * 60
+  		)
+
 
 		return session
 	}
