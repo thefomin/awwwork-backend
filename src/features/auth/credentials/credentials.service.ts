@@ -4,27 +4,30 @@ import {
 	NotFoundException,
 	UnauthorizedException
 } from '@nestjs/common'
-import { hash, verify } from 'argon2'
+import { verify } from 'argon2'
 
-import { PrismaService } from '@/shared/api/prisma/prisma.service'
-import { RedisService } from '@/shared/api/redis/redis.service'
 
-import { CreateUserRequest, SigninRequest } from './dto'
-import { UserService } from '@/shared/services/user/user.services'
+import { SigninRequest } from './dto'
+import { UserService } from '@/shared/services/user/user.service'
 import { SessionService } from '@/shared/services/session/session.service'
+import { ProfileService } from '@/shared/services/profile/profile.service'
+import { CreateUserRequest } from '@/shared/services/user/dto'
 
 @Injectable()
 export class CredentialsService {
 	public constructor(
 		private readonly userService: UserService,
-		private readonly sessionService: SessionService
+		private readonly sessionService: SessionService,
+		private readonly profileService: ProfileService
 	) {}
 
 	public async create(dto: CreateUserRequest) {
 		const exists = await this.userService.findByLogin(dto.email);
 		if (exists) throw new ConflictException('Пользователь уже существует');
 
-		const user = await this.userService.createUserWithProfile(dto);
+		const user = await this.userService.createUser(dto);
+
+		await this.profileService.createProfile(user)
 		return this.sessionService.createForUser(user);
  	}
 

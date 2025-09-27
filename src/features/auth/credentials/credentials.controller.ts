@@ -10,7 +10,8 @@ import {
 import { Authorization } from '@/shared/decorators'
 
 import { CredentialsService } from './credentials.service'
-import { CreateUserRequest, SigninRequest } from './dto'
+import { SigninRequest } from './dto'
+import { CreateUserRequest } from '@/shared/services/user/dto'
 
 @Controller('auth/credentials')
 export class CredentialsController {
