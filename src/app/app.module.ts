@@ -5,6 +5,7 @@ import { ApiModule } from '@/shared/api/api.module'
 import { IS_DEV_ENV } from '@/shared/utils'
 
 import { FeaturesModule } from '@/features'
+import { ServicesModule } from '@/shared/services'
 
 @Module({
 	imports: [
@@ -13,7 +14,8 @@ import { FeaturesModule } from '@/features'
 			isGlobal: true
 		}),
 		FeaturesModule,
-		ApiModule
+		ApiModule,
+		ServicesModule
 	],
 	controllers: [],
 	providers: []
