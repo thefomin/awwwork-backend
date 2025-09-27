@@ -5,63 +5,22 @@ import {
 } from '@nestjs/common'
 import { User } from '@prisma/__generated__'
 
-import { PrismaService } from '@/shared/api/prisma/prisma.service'
 
-import { UpdateUserRequest } from './dto'
+import { UserService } from '@/shared/services/user/user.service'
+import { UpdateUserRequest } from '@/shared/services/user/dto'
 
 @Injectable()
 export class UsersService {
-	public constructor(private readonly prismaService: PrismaService) {}
+	public constructor(private readonly userService:UserService ) {}
 
-	public async findById(id: string) {
-		const user = await this.prismaService.user.findUnique({
-			where: {
-				id
-			},
-			include: {
-				externalAccounts: true
-			}
-		})
+	public async update(user: User, dto: UpdateUserRequest){
+		const updated = await this.userService.updateUser(user, dto)
 
-		if (!user) {
-			throw new NotFoundException(
-				'Пользователь не найден. Пожалуйста, проверьте введенные данные.'
-			)
+		 if (!updated) {
+		throw new NotFoundException('Профиль не найден для обновления')
 		}
-
-		return user
+		return updated
 	}
+	
 
-	public async update(user: User, dto: UpdateUserRequest) {
-		await this.prismaService.user.update({
-			where: {
-				id: user.id
-			},
-			data: {
-				displayName: dto.displayName
-			},
-			select: {
-				id: true,
-				displayName: true,
-				email: true,
-				avatar: true
-			}
-		})
-
-		return true
-	}
-
-	public async findUser(user: User) {
-		const isExists = await this.prismaService.userProfile.findUnique({
-			where: {
-				userId: user.id
-			}
-		})
-
-		if (!isExists) {
-			throw new UnauthorizedException('Вы не авторизованы')
-		}
-
-		return isExists
-	}
 }
