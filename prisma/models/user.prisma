@@ -1,4 +1,4 @@
-model UserProfile {
+model Profile {
   id        String   @id @default(uuid())
   userId    String   @unique @map("user_id")
   username  String   @unique
@@ -13,10 +13,10 @@ model UserProfile {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("user_profiles")
+  @@map("profiles")
 }
 
-model UserCareer {
+model Career {
   id        String   @id @default(uuid())
   userId    String   @unique @map("user_id")
   headline  String?  
@@ -31,7 +31,7 @@ model UserCareer {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([userId])
-  @@map("user_careers")
+  @@map("careers")
 }
 
 enum EmploymentType {
@@ -43,12 +43,12 @@ enum EmploymentType {
   TEMPORARY
 }
 
-model UserSocial {
+model Social {
   id        String   @id @default(uuid())
   userId    String   @unique @map("user_id")
   interests String[]
   collabType CollabType? @map("collab_type")
-  @@map("user_socials")
+  @@map("socials")
 }
 
 enum CollabType {
@@ -57,13 +57,13 @@ enum CollabType {
   STARTUP
 }
 
-model UserFriend {
+model Friend {
   id        String   @id @default(uuid())
   userId    String  @map("user_id")
   friendId  String  @map("friend_id")
   status    FriendStatus  
   createdAt DateTime @default(now())
-  @@map("user_friends")
+  @@map("friends")
 }
 
 enum FriendStatus {
@@ -72,13 +72,13 @@ enum FriendStatus {
   BLOCKED
 }
 
-model UserFollow {
+model Follow {
   id        String   @id @default(uuid())
   followerId String @map("follower_id")
   followingId String  @map("following_id")
   createdAt   DateTime @default(now())  @map("created_at")
 
    @@unique([followerId, followingId])
-  @@map("user_follows")
+  @@map("follows")
 }
 
